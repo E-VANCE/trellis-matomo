@@ -1,0 +1,90 @@
+---
+- name: Install required PHP extensions for Matomo
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ matomo_php_extensions }}"
+  notify: restart php{{ php_version }}-fpm
+
+- name: Create addons folder for Matomo installation
+  file:
+    path: "{{ addons_dir }}"
+    owner: "{{ web_user }}"
+    group: "{{ web_group }}"
+    mode: '0755'
+    state: directory
+
+- name: Download Matomo
+  get_url:
+    url: "{{ matomo_url }}"
+    dest: "/tmp/matomo_latest.zip"
+
+- name: Unzip Matomo
+  unarchive:
+    src: "/tmp/matomo_latest.zip"
+    dest: "{{ addons_dir }}"
+    remote_src: yes
+    creates: "{{ addons_dir }}/matomo"
+
+- name: Set ownership of Matomo files
+  file:
+    path: "{{ addons_dir }}/matomo"
+    owner: "{{ matomo_owner }}"
+    group: "{{ matomo_group }}"
+    recurse: yes
+
+- name: Ensure correct permissions on Matomo directory
+  file:
+    path: "{{ addons_dir }}/matomo"
+    mode: '0755'
+    recurse: yes
+
+- name: Create Matomo database
+  mysql_db:
+    name: "{{ matomo_db_name }}"
+    state: present
+    login_host: "{{ site_env.db_host }}"
+    login_user: "{{ mysql_root_user }}"
+    login_password: "{{ mysql_root_password }}"
+  with_dict: "{{ wordpress_sites }}"
+  tags: matomo
+
+- name: Create Matomo database user and grant permissions
+  mysql_user:
+    name: "{{ item.value.matomo.db.user }}"
+    password: "{{ item.value.matomo.db.password }}"
+    host: "{{ site_env.db_user_host }}"
+    append_privs: yes
+    priv: "{{ matomo_db_name }}.*:ALL"
+    state: present
+    login_host: "{{ site_env.db_host }}"
+    login_user: "{{ mysql_root_user }}"
+    login_password: "{{ mysql_root_password }}"
+  with_dict: "{{ wordpress_sites }}"
+  tags: matomo
+
+- name: Create symlink to Matomo
+  file:
+    path: "{{ deploy_helper.new_release_path }}/web/analytics"
+    src: "{{ addons_dir }}/matomo"
+    state: link
+  with_dict: "{{ wordpress_sites }}"
+  tags: matomo
+
+- name: Explain next steps
+  debug:
+    msg: |
+      If necessary, set up Matomo as follows:
+      1) Deploy
+      2) Point your browser to {{ wordpress_env_defaults.wp_home }}/analytics
+      3) Proceed with the form using following credentials:
+         Host:              {{ site_env.db_user_host }}
+         Database User:     {{ item.value.matomo.db.user }}
+         Database Password: {{ item.value.matomo.db.password }}
+         Database:          {{ matomo_db_name }}
+         Table Prefix:      none
+         Set up your admin user.
+      4) Log in to Matomo.
+      5) Under Administration/System/Geolocation, download and activate the GeoIP 2 database.
+  with_dict: "{{ wordpress_sites }}"
+  tags: matomo

@@ -1,0 +1,15 @@
+---
+galaxy_info:
+  author: Henning Orth / E-VANCE
+  description: Use Matomo with Trellis
+  license: MIT
+  min_ansible_version: 2.4
+  galaxy_tags:
+    - trellis
+    - wordpress
+    - networking
+    - system
+    - matomo
+    - piwik
+    - analytics
+dependencies: []

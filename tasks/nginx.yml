@@ -1,0 +1,13 @@
+---
+- name: Configure Nginx for Matomo
+  template:
+    src: "nginx-matomo.conf.j2"
+    dest: "/etc/nginx/sites-available/{{ site_host }}-matomo.conf"
+  notify: reload nginx
+
+- name: Enable Nginx site for Matomo
+  file:
+    src: "/etc/nginx/sites-available/{{ site_host }}-matomo.conf"
+    dest: "/etc/nginx/sites-enabled/{{ site_host }}-matomo.conf"
+    state: link
+  notify: reload nginx

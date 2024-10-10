@@ -1,0 +1,31 @@
+server {
+  listen 80;
+  server_name {{ site_host }};
+  root {{ addons_dir }}/matomo;
+
+  index index.php index.html index.htm;
+
+  access_log /srv/www/{{ site_host }}/logs/matomo-access.log;
+  error_log /srv/www/{{ site_host }}/logs/matomo-error.log;
+
+  location / {
+    try_files $uri $uri/ =404;
+  }
+
+  location ~ \.php$ {
+    include fastcgi_params;
+    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    fastcgi_pass unix:/var/run/php/php{{ php_version }}-fpm.sock;
+  }
+
+  location ~* \.(?:css|js|ico|gif|jpe?g|png)$ {
+    expires max;
+    add_header Cache-Control "public";
+  }
+
+  location = /robots.txt {
+    allow all;
+    log_not_found off;
+    access_log off;
+  }
+}

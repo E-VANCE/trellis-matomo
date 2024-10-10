@@ -1,0 +1,13 @@
+---
+addons_dir: "{{ project_root }}/addons"
+matomo_url: "https://builds.matomo.org/matomo-latest.zip"
+matomo_php_extensions:
+  - php{{ php_version }}-gd
+  - php{{ php_version }}-curl
+  - php{{ php_version }}-zip
+  - php{{ php_version }}-mbstring
+  - php{{ php_version }}-xml
+  - php{{ php_version }}-cli
+  - php{{ php_version }}-mysql
+matomo_owner: "{{ web_user }}"
+matomo_group: "{{ web_group }}"
