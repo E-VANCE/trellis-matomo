@@ -1,8 +1,8 @@
 ---
-- name: restart php{{ php_version }}-fpm
+- name: reload php-fpm
   service:
     name: php{{ php_version }}-fpm
-    state: restarted
+    state: reloaded
 
 - name: reload nginx
   service:

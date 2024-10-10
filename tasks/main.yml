@@ -4,7 +4,7 @@
     name: "{{ item }}"
     state: present
   with_items: "{{ matomo_php_extensions }}"
-  notify: restart php{{ php_version }}-fpm
+  notify: reload php-fpm
 
 - name: Create addons folder for Matomo installation
   file:
