@@ -66,14 +66,21 @@
 
 - name: Check if Matomo variables are set for each site
   fail:
-    msg: "Matomo database credentials are not set in your group_vars – please review and ensure these are configured for the site {{ item.key }}."
-  when: 
-    - item.value.matomo is not defined
-    - item.value.matomo.db is not defined
-    - item.value.matomo.db.user is not defined
-    - item.value.matomo.db.password is not defined
-    - item.value.matomo.db.host is not defined
+    msg: >
+      Matomo database credentials are not properly set for the site '{{ item.key }}'. 
+      Please ensure that the following variables are configured:
+      - matomo.db
+      - matomo.db.user
+      - matomo.db.password
+      - matomo.db.host
+  when:
+    - item.value.matomo is not defined or
+      item.value.matomo.db is not defined or
+      item.value.matomo.db.user is not defined or
+      item.value.matomo.db.password is not defined or
+      item.value.matomo.db.host is not defined
   with_dict: "{{ combined_wordpress_sites }}"
+  no_log: "{{ item.value.matomo.db.password is not defined }}"
   tags: matomo
 
 - name: Create Matomo database
