@@ -72,7 +72,6 @@
     - item.value.matomo.db is not defined
     - item.value.matomo.db.user is not defined or item.value.matomo.db.password is not defined
   with_dict: "{{ combined_wordpress_sites }}"
-  no_log: true
   tags: matomo
 
 - name: Create Matomo database
