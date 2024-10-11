@@ -12,7 +12,7 @@ Add the role to the `galaxy.yml` file of Trellis:
 - name: trellis-matomo
   src: https://github.com/E-VANCE/trellis-matomo
   type: git
-  version: 0.2
+  version: '0.2'
 ```
 
 Run `ansible-galaxy install -r galaxy.yml` (or `trellis install galaxy` is you have [trellis-cli](https://github.com/roots/trellis-cli)) to install the new role.
@@ -68,7 +68,7 @@ In order to make sure that every new release has a corresponding symlink set tha
 
 ## Setup & Connection
 
-Follow the installation instructions that are being output via **trellis-matomo : Explain next steps**.
+Follow the installation instructions that are being output via **trellis-matomo: Explain next steps**.
 
 In order to hook up the newly created Matomo-instance to your WordPress (multi-)site, make sure to install the [Connect Matomo](https://wordpress.org/plugins/wp-piwik/)-plugin:
 
