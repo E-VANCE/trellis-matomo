@@ -105,7 +105,6 @@
     login_host: "{{ site_env.db_host }}"
     login_user: "{{ mysql_root_user }}"
     login_password: "{{ mysql_root_password }}"
-    column_case_sensitive: true
   with_dict: "{{ combined_wordpress_sites }}"
   no_log: true
   tags: matomo
