@@ -70,7 +70,9 @@
   when: 
     - item.value.matomo is not defined
     - item.value.matomo.db is not defined
-    - item.value.matomo.db.user is not defined or item.value.matomo.db.password is not defined
+    - item.value.matomo.db.user is not defined
+    - item.value.matomo.db.password is not defined
+    - item.value.matomo.db.host is not defined
   with_dict: "{{ combined_wordpress_sites }}"
   tags: matomo
 
