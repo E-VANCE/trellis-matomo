@@ -2,9 +2,32 @@
 
 > Installing Matomo for Trellis (via Ansible)
 
-## Introduction
+## Installation
 
-This Ansible-role installs the latest on-premise version of [Matomo](https://matomo.org/), the GDPR- and CCPA-compliant web analytics tool.
+This Ansible-role for [Trellis](https://roots.io/trellis) installs the latest on-premise version of [Matomo](https://matomo.org/), the GDPR- and CCPA-compliant web analytics tool.
+
+Add the role to the `galaxy.yml` file of Trellis:
+
+```yaml
+- name: trellis-matomo
+  src: https://github.com/E-VANCE/trellis-matomo
+  type: git
+  version: 0.2
+```
+
+Run `ansible-galaxy install -r galaxy.yml` (or `trellis install galaxy` is you have [trellis-cli](https://github.com/roots/trellis-cli)) to install the new role.
+
+Then, add the role into both `server.yml` **and** `dev.yml`:
+
+```yaml
+roles:
+    ... other Trellis roles ...
+    - { role: trellis-matomo, tags: [matomo]}
+```
+
+After adding the role to the above files and running the install, provision your Vagrant box via `vagrant reload --provision` (if it's running) or `vagrant provision` (if it's not). If you haven't provisioned the box yet simply run `vagrant up`.
+
+If you have [trellis-cli](https://github.com/roots/trellis-cli) installed – which is highly recommended – then use `trellis up` / `trellis vm start` or  `trellis provision {ENV}`.
 
 ## Configuration
 
@@ -20,7 +43,7 @@ Variable | Value / Comment
 
 Example:
 
-```YML
+```yaml
     matomo:
       db:
         user: matomo
@@ -34,7 +57,7 @@ In order to make sure that every new release has a corresponding symlink set tha
 
 `deploy-hooks/share-after.yml`
 
-```YML
+```yaml
 - name: Create symlink to Matomo
   file:
     path: "{{ deploy_helper.new_release_path }}/{{ item.value.public_path | default('web') }}/{{ item.value.matomo.path | default('matomo') }}"
