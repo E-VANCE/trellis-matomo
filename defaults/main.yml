@@ -1,5 +1,7 @@
 ---
-addons_dir: "{{ project_root }}/addons"
+addons_dir: "{{ www_root }}/{{ item.key }}/addons"
+matomo_dir: "matomo"
+combined_wordpress_sites: "{{ wordpress_sites|combine(vault_wordpress_sites, recursive=True) }}"
 matomo_url: "https://builds.matomo.org/matomo-latest.zip"
 matomo_php_extensions:
   - php{{ php_version }}-gd
@@ -11,3 +13,4 @@ matomo_php_extensions:
   - php{{ php_version }}-mysql
 matomo_owner: "{{ web_user }}"
 matomo_group: "{{ web_group }}"
+matomo_db_name: "matomo_{{ env }}"
