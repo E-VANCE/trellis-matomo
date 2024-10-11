@@ -17,7 +17,7 @@ Add the role to the `galaxy.yml` file of Trellis:
 
 Run `ansible-galaxy install -r galaxy.yml` (or `trellis install galaxy` is you have [trellis-cli](https://github.com/roots/trellis-cli)) to install the new role.
 
-Then, add the role into both `server.yml` **and** `dev.yml`:
+Then, add the role into `server.yml` and/or `dev.yml`:
 
 ```yaml
 roles:
@@ -25,9 +25,9 @@ roles:
     - { role: trellis-matomo, tags: [matomo]}
 ```
 
-After adding the role to the above files and running the install, provision your Vagrant box via `vagrant reload --provision` (if it's running) or `vagrant provision` (if it's not). If you haven't provisioned the box yet simply run `vagrant up`.
+After adding the role to the above file(s) and running the install, provision your Vagrant box via `vagrant reload --provision` (if it's running) or `vagrant provision` (if it's not). If you haven't provisioned the box yet simply run `vagrant up`.
 
-If you have [trellis-cli](https://github.com/roots/trellis-cli) installed – which is highly recommended – then use `trellis up` / `trellis vm start` or  `trellis provision {ENV}`.
+If you have [trellis-cli](https://github.com/roots/trellis-cli) installed – which is highly recommended – then just use `trellis up` / `trellis vm start` or  `trellis provision {ENV}`.
 
 ## Configuration
 
@@ -39,7 +39,7 @@ Variable | Value / Comment
 --- | ---
 `db.user` | The database-user you want to create for the Matomo DB
 `db.host` | Should be `localhost` if you're running with the Trellis default
-`path` | *optional* – The path where Matomo should be reachable within your website, f.ex. **example.com/analytics**
+`path` | *optional* – The path where Matomo should be reachable within your website, f.ex. **example.com/analytics** (defaults to *matomo*)
 
 Example:
 
