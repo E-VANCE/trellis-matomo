@@ -33,22 +33,48 @@ If you have [trellis-cli](https://github.com/roots/trellis-cli) installed – wh
 
 ### Group vars
 
-You define the following credentials for Matomo in your `group_vars/*/wordpress_sites.yml`:
+You define the following credentials for Matomo in your `group_vars/*/wordpress_sites.yml` & `group_vars/*/vault.yml`:
+
+**wordpress_sites.yml**
 
 Variable | Value / Comment
 --- | ---
 `db.user` | The database-user you want to create for the Matomo DB
 `db.host` | Should be `localhost` if you're running with the Trellis default
-`path` | *optional* – The path where Matomo should be reachable within your website, f.ex. **example.com/analytics** (defaults to *matomo*)
+`path` | *optional* – The path where Matomo should be reachable within your website, f.ex. **website.com/analytics** (defaults to *matomo*)
 
 Example:
 
 ```yaml
+[...]
+wordpress_sites:
+  website.com:
+    site_hosts: [...]
+    [...]
     matomo:
       db:
         user: matomo
         host: localhost
       path: analytics
+```
+
+**vault.yml**
+
+Variable | Value / Comment
+--- | ---
+`db.password` | The database-password you want to use for the Matomo DB
+
+Example:
+
+```yaml
+[...]
+vault_wordpress_sites:
+  website.com:
+    env:
+      [...]
+    matomo:
+      db:
+        password: XXXXXX
 ```
 
 ### Deployments
