@@ -40,8 +40,8 @@ You define the following credentials for Matomo in your `group_vars/*/wordpress_
 Variable | Value / Comment
 --- | ---
 `db.user` | The database-user you want to create for the Matomo DB
-`db.host` | Should be `localhost` if you're running with the Trellis default
-`path` | *optional* – The path where Matomo should be reachable within your website, f.ex. **website.com/analytics** (defaults to *matomo*)
+`paths.addons` | The path where Matomo should be installed within your Trellis project – will resolve to `/srv/www/website.com/{{ addons_path }}`
+`paths.matomo` | The path where Matomo should be reachable within your website, e.g. **website.com/{{ matomo_path }}**
 
 Example:
 
@@ -54,8 +54,9 @@ wordpress_sites:
     matomo:
       db:
         user: matomo
-        host: localhost
-      path: analytics
+      paths:
+        addons: addons
+        matomo: analytics # Used for accessing Matomo via /your-endpoint
 ```
 
 **vault.yml**
@@ -86,10 +87,12 @@ In order to make sure that every new release has a corresponding symlink set tha
 ```yaml
 - name: Create symlink to Matomo
   file:
-    path: "{{ deploy_helper.new_release_path }}/{{ item.value.public_path | default('web') }}/{{ item.value.matomo.path | default('matomo') }}"
-    src: "{{ addons_dir }}/{{ matomo_dir }}"
+    path: "{{ deploy_helper.new_release_path }}/{{ item.value.public_path | default('web') }}/{{ item.value.matomo.paths.matomo }}"
+    src: "{{ project_root }}/{{ item.value.matomo.paths.addons }}/matomo"
     state: link
-  with_items: "{{ wordpress_sites }}"
+  loop: "{{ wordpress_sites | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
 ```
 
 ## Setup & Connection
