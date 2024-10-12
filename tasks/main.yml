@@ -12,6 +12,29 @@
     state: present
   become: yes
 
+- name: Check if Matomo variables are set for each site
+  fail:
+    msg: >
+      Matomo database credentials are not properly set for the site '{{ item.key }}'. 
+      Please ensure that the following variables are configured:
+      - matomo.db
+      - matomo.db.user
+      - matomo.db.password
+      - matomo.paths
+      - matomo.paths.addons
+      - matomo.paths.matomo
+  when:
+    - item.value.matomo is not defined or
+      item.value.matomo.db is not defined or
+      item.value.matomo.db.user is not defined or
+      item.value.matomo.db.password is not defined or
+      item.value.matomo.paths is not defined or
+      item.value.matomo.paths.addons is not defined or
+      item.value.matomo.paths.matomo is not defined
+  with_dict: "{{ combined_wordpress_sites }}"
+  no_log: "{{ item.value.matomo.db.password is not defined }}"
+  tags: matomo
+
 - name: Create addons folder for Matomo installation
   file:
     path: "{{ addons_dir }}"
@@ -32,7 +55,7 @@
     src: "/tmp/matomo_latest.zip"
     dest: "{{ addons_dir }}"
     remote_src: yes
-    creates: "{{ addons_dir }}/{{ matomo_dir }}"
+    creates: "{{ addons_dir }}/matomo"
   with_dict: "{{ wordpress_sites }}"
   no_log: true
   tags: matomo
@@ -47,7 +70,7 @@
 
 - name: Set ownership of Matomo files
   file:
-    path: "{{ addons_dir }}/{{ matomo_dir }}"
+    path: "{{ addons_dir }}/matomo"
     owner: "{{ matomo_owner }}"
     group: "{{ matomo_group }}"
     recurse: yes
@@ -57,30 +80,11 @@
 
 - name: Ensure correct permissions on Matomo directory
   file:
-    path: "{{ addons_dir }}/{{ matomo_dir }}"
+    path: "{{ addons_dir }}/matomo"
     mode: '0755'
     recurse: yes
   with_dict: "{{ wordpress_sites }}"
   no_log: true
-  tags: matomo
-
-- name: Check if Matomo variables are set for each site
-  fail:
-    msg: >
-      Matomo database credentials are not properly set for the site '{{ item.key }}'. 
-      Please ensure that the following variables are configured:
-      - matomo.db
-      - matomo.db.user
-      - matomo.db.password
-      - matomo.db.host
-  when:
-    - item.value.matomo is not defined or
-      item.value.matomo.db is not defined or
-      item.value.matomo.db.user is not defined or
-      item.value.matomo.db.password is not defined or
-      item.value.matomo.db.host is not defined
-  with_dict: "{{ combined_wordpress_sites }}"
-  no_log: "{{ item.value.matomo.db.password is not defined }}"
   tags: matomo
 
 - name: Create Matomo database
@@ -111,8 +115,8 @@
 
 - name: Create symlink to Matomo
   file:
-    path: "{{ www_root }}/{{ item.key }}/{{ item.value.current_path | default('current') }}/{{ item.value.public_path | default('web') }}/{{ item.value.matomo.path | default('matomo') }}"
-    src: "{{ addons_dir }}/{{ matomo_dir }}"
+    path: "{{ www_root }}/{{ item.key }}/{{ item.value.current_path | default('current') }}/{{ item.value.public_path | default('web') }}/{{ matomo_dir }}"
+    src: "{{ addons_dir }}/matomo"
     state: link
   loop: "{{ wordpress_sites | dict2items }}"
   loop_control:
@@ -127,7 +131,7 @@
 
       1) Deploy
 
-      2) Point your browser to {{ wordpress_env_defaults.wp_home }}/{{ item.value.matomo.path | default('matomo') }}
+      2) Point your browser to {{ wordpress_env_defaults.wp_home }}/{{ matomo_dir }}
 
       3) Proceed with the form using following credentials:
       

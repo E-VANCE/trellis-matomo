@@ -1,6 +1,6 @@
 ---
-addons_dir: "{{ www_root }}/{{ item.key }}/addons"
-matomo_dir: "matomo"
+addons_dir: "{{ www_root }}/{{ item.key }}/{{ item.value.matomo.paths.addons }}"
+matomo_dir: "{{ item.value.matomo.paths.matomo }}"
 combined_wordpress_sites: "{{ wordpress_sites|combine(vault_wordpress_sites, recursive=True) }}"
 matomo_url: "https://builds.matomo.org/matomo-latest.zip"
 matomo_php_extensions:
