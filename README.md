@@ -15,7 +15,7 @@ Add the role to the `galaxy.yml` file of Trellis:
   version: '0.3.1'
 ```
 
-Run `ansible-galaxy install -r galaxy.yml` (or `trellis install galaxy` is you have [trellis-cli](https://github.com/roots/trellis-cli)) to install the new role.
+Run `ansible-galaxy install -r galaxy.yml` (or `trellis galaxy install` is you have [trellis-cli](https://github.com/roots/trellis-cli)) to install the new role.
 
 Then, add the role into `server.yml` and/or `dev.yml`:
 
