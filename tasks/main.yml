@@ -150,6 +150,25 @@
   loop_control:
     label: "{{ item.key }}"
 
+- name: Ensure Nginx includes.d directory exists
+  file:
+    path: "{{ nginx_path }}/includes.d/{{ item.key }}"
+    state: directory
+    mode: '0755'
+  loop: "{{ wordpress_sites | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+
+- name: Create Nginx security config for Matomo
+  template:
+    src: matomo-nginx.conf.j2
+    dest: "{{ nginx_path }}/includes.d/{{ item.key }}/matomo.conf"
+    mode: '0644'
+  loop: "{{ wordpress_sites | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+  notify: reload nginx
+
 - name: Explain next steps
   pause:
     seconds: 0

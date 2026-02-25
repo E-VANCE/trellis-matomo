@@ -1,0 +1,31 @@
+# {{ ansible_managed }}
+
+# Deny access to private Matomo directories
+location ~ ^/{{ matomo_dir }}/(config|tmp|core|lang) {
+    deny all;
+    return 403;
+}
+
+# Only allow specific Matomo PHP files to be executed;
+# all others are denied before reaching the generic PHP handler.
+location ~ ^/{{ matomo_dir }}/(?!(?:index|matomo|piwik|js/index|plugins/HeatmapSessionRecording/configs)\.php$).*\.php$ {
+    deny all;
+    return 403;
+}
+
+# Deny access to sensitive Matomo directories
+location ~ ^/{{ matomo_dir }}/(libs|vendor|misc|node_modules) {
+    deny all;
+    return 403;
+}
+
+# Deny access to .ht files within the Matomo directory
+location ~ ^/{{ matomo_dir }}/\.ht {
+    deny all;
+    return 403;
+}
+
+# Serve text files in Matomo root as plain text
+location ~ ^/{{ matomo_dir }}/(.*\.md|LEGALNOTICE|LICENSE) {
+    default_type text/plain;
+}

@@ -12,7 +12,7 @@ Add the role to the `galaxy.yml` file of Trellis:
 - name: trellis-matomo
   src: https://github.com/E-VANCE/trellis-matomo
   type: git
-  version: '0.3.1'
+  version: '0.4'
 ```
 
 Run `ansible-galaxy install -r galaxy.yml` (or `trellis galaxy install` is you have [trellis-cli](https://github.com/roots/trellis-cli)) to install the new role.
@@ -102,6 +102,19 @@ Follow the installation instructions that are being output via **trellis-matomo:
 In order to hook up the newly created Matomo-instance to your WordPress (multi-)site, make sure to install the [Connect Matomo](https://wordpress.org/plugins/wp-piwik/)-plugin:
 
 `composer require wpackagist-plugin/wp-piwik`
+
+## Security
+
+This role automatically deploys an Nginx config snippet to `/etc/nginx/includes.d/<site>/matomo.conf` that restricts public access to Matomo's private directories and files. Specifically, it:
+
+- **Denies access** to the `config`, `tmp`, `core`, and `lang` directories
+- **Restricts PHP execution** to only the entry-point files Matomo requires (`index.php`, `matomo.php`, `piwik.php`, `js/index.php`, `plugins/HeatmapSessionRecording/configs.php`); all other `.php` files return 403
+- **Denies access** to the `libs`, `vendor`, `misc`, and `node_modules` directories
+- **Blocks `.ht` files**
+
+This config is loaded via Trellis's `includes.d` mechanism, which is included in the site's `server {}` block before the generic PHP handler.
+
+**A note on `nginx_includes_d_cleanup`:** Trellis can clean up unmanaged files in `includes.d` when this variable is enabled. Because this role runs *after* `wordpress-setup` in `server.yml`, the config is re-deployed after any cleanup pass. If you run the roles in a non-standard order, you may need to set `nginx_includes_d_cleanup: false` or place the template in your local `nginx-includes` directory instead.
 
 ### Known limitations
 
