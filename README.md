@@ -12,7 +12,7 @@ Add the role to the `galaxy.yml` file of Trellis:
 - name: trellis-matomo
   src: https://github.com/E-VANCE/trellis-matomo
   type: git
-  version: '0.4'
+  version: '0.5'
 ```
 
 Run `ansible-galaxy install -r galaxy.yml` (or `trellis galaxy install` is you have [trellis-cli](https://github.com/roots/trellis-cli)) to install the new role.

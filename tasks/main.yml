@@ -141,6 +141,15 @@
   when: matomo_db.changed
   tags: matomo
 
+# On a fresh server the first deploy has not run yet, so there is no current release to link into
+- name: Check if current release exists
+  stat:
+    path: "{{ www_root }}/{{ item.key }}/{{ item.value.current_path | default('current') }}"
+  register: matomo_current_release
+  loop: "{{ wordpress_sites | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+
 - name: Create symlink to Matomo
   file:
     path: "{{ www_root }}/{{ item.key }}/{{ item.value.current_path | default('current') }}/{{ item.value.public_path | default('web') }}/{{ matomo_dir }}"
@@ -149,6 +158,8 @@
   loop: "{{ wordpress_sites | dict2items }}"
   loop_control:
     label: "{{ item.key }}"
+    extended: true
+  when: matomo_current_release.results[ansible_loop.index0].stat.exists
 
 - name: Ensure Nginx includes.d directory exists
   file:
